@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lbd.common.dao.UUserMapper">
+
+    <resultMap id="BaseResultMap" type="com.lbd.user.bo.UserBo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="open_id" property="openId" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="BIGINT"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="country" property="country" jdbcType="VARCHAR"/>
+        <result column="head_img_url" property="headImgUrl" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="pswd" property="pswd" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="qq" property="qq" jdbcType="VARCHAR"/>
+        <result column="score" property="score" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="BIGINT"/>
+        <result column="order_quantity" property="orderQuantity" jdbcType="BIGINT"/>
+        <result column="total_expenses" property="totalExpenses" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      id, open_id, nickname, sex, province,
+      city, country, head_img_url, email, pswd,
+      mobile, qq, score, update_time, create_time,
+      last_login_time, status
+    </sql>
+
+    <sql id="limit_sql">
+        <if test="page_sql != null and page_sql != ''">
+            ${page_sql}
+        </if>
+    </sql>
+
+    <sql id="where_all">
+        <where>
+            <if test="findContent != null and findContent != ''">
+                and (
+                LOWER(nickname) like LOWER(CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")) or
+                LOWER(mobile) like LOWER(CONCAT("%",#{findContent,jdbcType=VARCHAR},"%"))
+                )
+            </if>
+        </where>
+    </sql>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from u_user
+        <include refid="where_all"/>
+        order by update_time desc
+        <include refid="limit_sql"/>
+    </select>
+
+    <select id="findCount" resultMap="BaseResultMap">
+        select count(id) from u_user
+        <include refid="where_all"/>
+    </select>
+
+    <!-- 用户权限分配的分页查询 -->
+    <select id="findUserAndRole" resultType="com.lbd.permission.bo.UserRoleAllocationBo">
+        select u.id,u.nickname,u.email,u.create_time,u.last_login_time,u.status ,group_concat(ur.name)
+          roleNames,group_concat(ur.id)roleIds from
+          u_user u
+        left join u_user_role uur on uur.uid = u.id
+        left join u_role ur on ur.id = uur.rid
+        <where>
+            <if test="findContent != null and findContent !='' ">
+                and (
+                LOWER(u.nickname) like LOWER(CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")) or
+                LOWER(u.email) like LOWER(CONCAT("%",#{findContent,jdbcType=VARCHAR},"%"))
+                )
+            </if>
+        </where>
+        group by u.id
+    </select>
+
+    <select id="selectRoleByUserId" resultType="com.lbd.permission.bo.URoleBo">
+        <!--
+      select ur.id,ur.name,ur.type,ifnull(uu.id,0)marker,uu.id userId from u_role ur
+      left join u_user_role uur on uur.rid = ur.id
+      left join (select id from u_user where id =#{id,jdbcType=BIGINT}) uu on uu.id = uur.uid
+      group by ur.id
+         -->
+        select ur.id,ur.name,ur.type,ifnull(uur.uid,0) marker from u_role ur
+        left join(select * from u_user_role where uid=#{id,jdbcType=BIGINT}) uur on uur.rid = ur.id
+    </select>
+
+    <!-- 登录 -->
+    <select id="login" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from u_user
+        where email = #{email,jdbcType=VARCHAR} and pswd = #{pswd,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据邮箱|帐号查询 -->
+    <select id="findUserByEmail" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from u_user
+        where email = #{email,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from u_user
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+      delete from u_user
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.lbd.common.model.UUser">
+    insert into u_user (
+      id, open_id, nickname, sex, province,
+      city, country, head_img_url, email, pswd,
+      mobile, qq, score, update_time, create_time,
+      last_login_time, status
+      )
+    values (
+      #{id,jdbcType=BIGINT}, #{openId,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{sex,jdbcType=BIGINT}, #{province,jdbcType=VARCHAR},
+      #{city,jdbcType=VARCHAR},#{country,jdbcType=VARCHAR},#{headImgUrl,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{pswd,jdbcType=VARCHAR},
+      #{mobile,jdbcType=VARCHAR},#{qq,jdbcType=VARCHAR},#{score,jdbcType=VARCHAR},#{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP},
+      #{lastLoginTime,jdbcType=TIMESTAMP},#{status,jdbcType=BIGINT}
+      )
+    </insert>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.lbd.common.model.UUser">
+        insert into u_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="openId != null">
+                open_id,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="province != null">
+                province,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="country != null">
+                country,
+            </if>
+            <if test="headImgUrl != null">
+                head_img_url,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="pswd != null">
+                pswd,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="qq != null">
+                qq,
+            </if>
+            <if test="score != null">
+                score,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="openId != null">
+                #{openId,jdbcType=BIGINT},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=BIGINT},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=BIGINT},
+            </if>
+            <if test="province != null">
+                #{province,jdbcType=BIGINT},
+            </if>
+            <if test="city != null">
+                #{city,jdbcType=BIGINT},
+            </if>
+            <if test="country != null">
+                #{country,jdbcType=BIGINT},
+            </if>
+            <if test="headImgUrl != null">
+                #{headImgUrl,jdbcType=BIGINT},
+            </if>
+            <if test="email != null">
+                #{email,jdbcType=BIGINT},
+            </if>
+            <if test="pswd != null">
+                #{pswd,jdbcType=BIGINT},
+            </if>
+            <if test="mobile != null">
+                #{mobile,jdbcType=BIGINT},
+            </if>
+            <if test="qq != null">
+                #{qq,jdbcType=BIGINT},
+            </if>
+            <if test="score != null">
+                #{score,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastLoginTime != null">
+                #{lastLoginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=BIGINT}
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.lbd.common.model.UUser">
+        update u_user
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=BIGINT},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=BIGINT},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=BIGINT},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=BIGINT},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=BIGINT},
+            </if>
+            <if test="headImgUrl != null">
+                head_img_url = #{headImgUrl,jdbcType=BIGINT},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=BIGINT},
+            </if>
+            <if test="pswd != null">
+                pswd = #{pswd,jdbcType=BIGINT},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=BIGINT},
+            </if>
+            <if test="qq != null">
+                qq = #{qq,jdbcType=BIGINT},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.lbd.common.model.UUser">
+        update u_user
+        set
+          nickname = #{nickname,jdbcType=VARCHAR},
+          sex = #{sex,jdbcType=BIGINT},
+          province = #{province,jdbcType=BIGINT},
+          city = #{city,jdbcType=BIGINT},
+          country = #{country,jdbcType=BIGINT},
+          head_img_url = #{headImgUrl,jdbcType=BIGINT},
+          email = #{email,jdbcType=BIGINT},
+          pswd = #{pswd,jdbcType=BIGINT},
+          mobile = #{mobile,jdbcType=BIGINT},
+          qq = #{qq,jdbcType=BIGINT},
+          score = #{score,jdbcType=BIGINT},
+          update_time = #{updateTime,jdbcType=BIGINT},
+          create_time = #{createTime,jdbcType=TIMESTAMP},
+          last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+          status = #{status,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+
+    <update id="updateByOpenIdSelective" parameterType="com.lbd.common.model.UUser">
+        update u_user
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=BIGINT},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=BIGINT},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=BIGINT},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=BIGINT},
+            </if>
+            <if test="country != null">
+                country = #{country,jdbcType=BIGINT},
+            </if>
+            <if test="headImgUrl != null">
+                head_img_url = #{headImgUrl,jdbcType=BIGINT},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=BIGINT},
+            </if>
+            <if test="pswd != null">
+                pswd = #{pswd,jdbcType=BIGINT},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=BIGINT},
+            </if>
+            <if test="qq != null">
+                qq = #{qq,jdbcType=BIGINT},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByOpenId" parameterType="com.lbd.common.model.UUser">
+        update u_user
+        set
+        nickname = #{nickname,jdbcType=VARCHAR},
+        sex = #{sex,jdbcType=BIGINT},
+        province = #{province,jdbcType=BIGINT},
+        city = #{city,jdbcType=BIGINT},
+        country = #{country,jdbcType=BIGINT},
+        head_img_url = #{headImgUrl,jdbcType=BIGINT},
+        email = #{email,jdbcType=BIGINT},
+        pswd = #{pswd,jdbcType=BIGINT},
+        mobile = #{mobile,jdbcType=BIGINT},
+        qq = #{qq,jdbcType=BIGINT},
+        score = #{score,jdbcType=BIGINT},
+        update_time = #{updateTime,jdbcType=BIGINT},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+        status = #{status,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateScore" parameterType="java.lang.Integer">
+        update u_user
+        set
+        score = score + #{score,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectUserIdByOpenId" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select
+        id
+        from u_user
+        where open_id = #{openId,jdbcType=VARCHAR}
+    </select>
+
+    <!-- openid查询 -->
+    <select id="findUserByOpenId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from u_user
+        where open_id = #{openId,jdbcType=VARCHAR}
+    </select>
+
+</mapper>
