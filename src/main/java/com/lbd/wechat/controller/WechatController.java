@@ -116,7 +116,7 @@ public class WechatController {
 
         // 用户同意授权
         if (!"authdeny".equals(code)) {
-            // 获取网页授权access_token
+            // 获取网页授权access_token TODO appid与appSecret需抽出
             WeixinOauth2Token weixinOauth2Token = AdvancedUtil.getOauth2AccessToken("wxebe0dfbffbab06bb", "2dcdf31f6f1ff8f04427d3f11c40e196", code);
 
             // 网页授权接口访问凭证
@@ -158,12 +158,13 @@ public class WechatController {
                 userService.insertSelective(user);
             }
 
+            // todo 前端url需抽出
             if (null != redirect && !redirect.isEmpty()) {
                 // 跳转到 m.liangzehe.com/login?openid=xxx&redirect=xxx
-                redirectUrl = "http://m.liangzehe.com/login?openid=" + snsUserInfo.getOpenId() + "&redirect=" + redirect;
+                redirectUrl = "http://m.lebida.com/login?openid=" + snsUserInfo.getOpenId() + "&redirect=" + redirect;
             } else {
                 // 跳转到首页：m.liangzehe.com/
-                redirectUrl = "http://m.liangzehe.com";
+                redirectUrl = "http://m.lebida.com";
             }
         }
         response.sendRedirect(redirectUrl);
