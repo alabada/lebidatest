@@ -44,7 +44,7 @@ public class MenuManager {
         //
         ComplexButton mainBtn1 = new ComplexButton();
         mainBtn1.setName("乐必达");
-        mainBtn1.setSub_button(new Button[]{btn11});
+        mainBtn1.setSubButton(new Button[]{btn11});
 
 //        ComplexButton mainBtn2 = new ComplexButton();
 //        mainBtn2.setName("购物");
@@ -64,7 +64,7 @@ public class MenuManager {
         // 第三方用户唯一凭证
         String appId = "wxb63e6e0f22d99f6f";
         // 第三方用户唯一凭证密钥
-        String appSecret = "2dcdf31f6f1ff8f04427d3f11c40e196";
+        String appSecret = "4016f84cd6264a176742587eb93e4dc4";
 
         // 调用接口获取凭证
         Token token = CommonUtil.getToken(appId, appSecret);

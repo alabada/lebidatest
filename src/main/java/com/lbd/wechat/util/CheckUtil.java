@@ -13,7 +13,7 @@ import java.util.Set;
  * @author wenzhida
  */
 public class CheckUtil {
-    private static final String token = "liangzehe";
+    private static final String token = "lebida2018";
 
     public static boolean checkSignature(String signature, String timestamp, String nonce) {
         String[] arr = new String[]{token, timestamp, nonce};

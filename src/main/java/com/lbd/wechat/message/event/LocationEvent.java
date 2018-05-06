@@ -1,10 +1,13 @@
 package com.lbd.wechat.message.event;
 
+import lombok.Data;
+
 /**
  * 上报地理位置事件
  *
  * @author wenzhida
  */
+@Data
 public class LocationEvent extends BaseEvent {
     // 地理位置纬度
     private String Latitude;
@@ -12,28 +15,4 @@ public class LocationEvent extends BaseEvent {
     private String Longitude;
     // 地理位置精度
     private String Precision;
-
-    public String getLatitude() {
-        return Latitude;
-    }
-
-    public void setLatitude(String latitude) {
-        Latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return Longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        Longitude = longitude;
-    }
-
-    public String getPrecision() {
-        return Precision;
-    }
-
-    public void setPrecision(String precision) {
-        Precision = precision;
-    }
 }

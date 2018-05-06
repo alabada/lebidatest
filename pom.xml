@@ -218,6 +218,13 @@
 
         <!-- 其他常用包 begin -->
 
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.12</version>
+        </dependency>
+
         <dependency>
             <groupId>commons-attributes</groupId>
             <artifactId>commons-attributes-api</artifactId>

@@ -100,7 +100,7 @@ public class CoreService {
                 String eventType = requestMap.get("Event");
                 // 关注(订阅)
                 if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) {
-                    textMessage.setContent("您好，欢迎关注哦，关注就能获取红包，注意查收！！！");
+                    textMessage.setContent("终于等到你，你已获取999大红包");
                     // 将消息对象转换成XML
                     respXml = MessageUtil.messageToXml(textMessage);
                 }
