@@ -12,7 +12,9 @@ import java.util.List;
 @Data
 public class SNSUserInfo {
 
-    // 用户标识
+    /**
+     * 用户标识
+     */
     private String openId;
 
     // 用户昵称
