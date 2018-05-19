@@ -162,7 +162,7 @@ public class MatrixToImageWriter {
 
             //存放logo的文件夹
             String path = "E:/QRCodeImage";
-
+// https://wx1.sinaimg.cn/mw690/0077qhzWly1fr8kazy9x0j30p10xckjl.jpg
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
             @SuppressWarnings("rawtypes")
