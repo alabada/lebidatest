@@ -14,9 +14,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.lbd.filesystem.upload.utils.SaveFile.readInputStream;
 
 /**
  * @Author wenzhd
@@ -103,7 +108,7 @@ public class MatrixToImageWriter {
 
             g.dispose();
 
-            ImageIO.write(image, "jpeg", new File("D:/newPic.jpg"));
+            ImageIO.write(image, "jpeg", new File("E:/QRCodeImage/newPic.jpg"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -158,11 +163,10 @@ public class MatrixToImageWriter {
     public static void main(String args[]) {
         try {
             //二维码表示的内容
-            String content = "http://www.cnblogs.com/";
+            String content = "linesum.com";
 
             //存放logo的文件夹
             String path = "E:/QRCodeImage";
-// https://wx1.sinaimg.cn/mw690/0077qhzWly1fr8kazy9x0j30p10xckjl.jpg
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
 
             @SuppressWarnings("rawtypes")
@@ -186,7 +190,25 @@ public class MatrixToImageWriter {
             //qrcFile用来存放生成的二维码图片（无logo，无文字）
             File qrcFile = new File(path, "myPicture.jpg");
             //logoFile用来存放带有logo的二维码图片（二维码+logo，无文字）
-            File logoFile = new File(path, "chopper.jpg");
+            File logoFile = new File(path, "logo.jpg");
+
+//            URL url = new URL("https://wx1.sinaimg.cn/mw690/0077qhzWly1fr8kazy9x0j30p10xckjl.jpg");
+//            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+//            //设置请求方式为"GET"
+//            conn.setRequestMethod("GET");
+//            //超时响应时间为5秒
+//            conn.setConnectTimeout(5 * 1000);
+//            //通过输入流获取图片数据
+//            InputStream inStream = conn.getInputStream();
+//            //得到图片的二进制数据，以二进制封装得到数据，具有通用性
+//            byte[] data = readInputStream(inStream);
+//            File logoFile = new File("logo.jpg");
+//            //创建输出流
+//            FileOutputStream outStream = new FileOutputStream(logoFile);
+//            //写入数据
+//            outStream.write(data);
+//            //关闭输出流
+//            outStream.close();
 
             //开始画二维码
             MatrixToImageWriter.writeToFile(bitMatrix, "jpg", qrcFile);
